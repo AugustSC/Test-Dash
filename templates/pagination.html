@@ -1,0 +1,53 @@
+{% set start_page = (page - 3) if (page - 3) > 1 else 1 %}
+{% set end_page = (page + 3) if (page + 3) < total_pages else total_pages %}
+
+<nav>
+  <ul class="pagination justify-content-center mt-4">
+
+    {# Previous Button #}
+    {% if page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page - 1 }}&per_page={{ per_page }}{% if author %}&author={{ author }}{% endif %}{% if content %}&content={{ content }}{% endif %}{% if server %}&server={{ server }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if channel %}&channel={{ channel }}{% endif %}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {# First Page #}
+    {% if start_page > 1 %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1&per_page={{ per_page }}{% if author %}&author={{ author }}{% endif %}{% if content %}&content={{ content }}{% endif %}{% if server %}&server={{ server }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if channel %}&channel={{ channel }}{% endif %}">1</a>
+      </li>
+      {% if start_page > 2 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endif %}
+
+    {# Main Page Window #}
+    {% for p in range(start_page, end_page + 1) %}
+      <li class="page-item {% if p == page %}active{% endif %}">
+        <a class="page-link" href="?page={{ p }}&per_page={{ per_page }}{% if author %}&author={{ author }}{% endif %}{% if content %}&content={{ content }}{% endif %}{% if server %}&server={{ server }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if channel %}&channel={{ channel }}{% endif %}">{{ p }}</a>
+      </li>
+    {% endfor %}
+
+    {# Last Page #}
+    {% if end_page < total_pages %}
+      {% if end_page < total_pages - 1 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ total_pages }}&per_page={{ per_page }}{% if author %}&author={{ author }}{% endif %}{% if content %}&content={{ content }}{% endif %}{% if server %}&server={{ server }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if channel %}&channel={{ channel }}{% endif %}">{{ total_pages }}</a>
+      </li>
+    {% endif %}
+
+    {# Next Button #}
+    {% if page < total_pages %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ page + 1 }}&per_page={{ per_page }}{% if author %}&author={{ author }}{% endif %}{% if content %}&content={{ content }}{% endif %}{% if server %}&server={{ server }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if channel %}&channel={{ channel }}{% endif %}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>

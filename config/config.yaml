@@ -1,0 +1,15 @@
+flagged_keywords:
+  - spy
+  - intel
+  - montoya
+  - test
+  - test squad
+ignored_bots:
+  - Dyno
+  - MEE6
+  - TestBot9000
+  - Carl-bot
+  - Orgs
+locations:
+  - "Pax Mortis"
+  - "Ramming Department"

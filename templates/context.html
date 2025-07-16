@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Message Context</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background-color: #121212; color: #fff; font-family: sans-serif; margin: 1rem; }
+    .container { max-width: 900px; margin: auto; background: #1e1e1e; padding: 1rem; border-radius: 10px; }
+    .message { padding: 0.75rem; border-bottom: 1px solid #333; }
+    .highlight { background-color: #333300; font-weight: bold; }
+    .meta { font-size: 0.85rem; color: #aaa; }
+    .back-link { color: #FFBB00; text-decoration: none; display: inline-block; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Back to Dashboard</a>
+    <h2>Context Around Message</h2>
+    {% for msg in messages %}
+      <div class="message {% if msg.id == ref_id %}highlight{% endif %}">
+        <div class="meta">{{ msg.timestamp }} — {{ msg.server_name }} / {{ msg.channel_name }} — <strong>{{ msg.author }}</strong></div>
+        <div class="content">{{ msg.content }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

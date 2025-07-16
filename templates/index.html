@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TestSpy Paranoia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const serverSelect = document.getElementById('server');
+      const categorySelect = document.getElementById('category');
+      const channelSelect = document.getElementById('channel');
+
+      const categoryMap = {{ category_map | tojson }};
+      const channelMap = {{ channel_map | tojson }};
+
+      function updateCategories() {
+        const selectedServer = serverSelect.value;
+        const categories = categoryMap[selectedServer] || [];
+
+        categorySelect.innerHTML = '<option value="">All</option>';
+        categories.forEach(function (cat) {
+          const option = document.createElement('option');
+          option.value = cat;
+          option.textContent = cat;
+          categorySelect.appendChild(option);
+        });
+        updateChannels();
+      }
+
+      function updateChannels() {
+        const selectedServer = serverSelect.value;
+        const selectedCategory = categorySelect.value;
+        const key = `${selectedServer}::${selectedCategory}`;
+        const channels = channelMap[key] || [];
+
+        channelSelect.innerHTML = '<option value="">All</option>';
+        channels.forEach(function (chan) {
+          const option = document.createElement('option');
+          option.value = chan;
+          option.textContent = chan;
+          channelSelect.appendChild(option);
+        });
+      }
+
+      serverSelect.addEventListener('change', updateCategories);
+      categorySelect.addEventListener('change', updateChannels);
+      updateCategories();
+    });
+  </script>
+  <style>
+    body { background-color: #121212; color: #ffffff; }
+    .brand-yellow { color: #FFBB00; }
+    .bg-dark-card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    }
+    .filter-label { font-weight: 500; }
+    .filter-input, select {
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      color: #ffffff;
+    }
+    .navbar-brand img { height: 40px; }
+    .form-label { font-size: 0.9rem; margin-bottom: 0.25rem; color: #bbb; }
+    .filter-group { margin-bottom: 0.75rem; }
+    input[type="text"], select { width: 100%; }
+    .clickable-row { cursor: pointer; }
+    a.user-link { color: #FFBB00; text-decoration: none; }
+    a.user-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+  <a class="navbar-brand d-flex align-items-center" href="#">
+    <img src="/static/TEST-Logo.png" alt="Logo">
+    <span class="ms-2 brand-yellow">TestSpy</span>
+  </a>
+ <div class="ms-auto d-flex align-items-center gap-2">
+  <a href="/dashboard" class="btn btn-warning">
+    📊 Dashboard
+  </a>
+  <button class="btn btn-sm btn-outline-warning" disabled>Login (Mock)</button>
+</div>
+</nav>
+
+<div class="container mt-4">
+  <div class="row g-3">
+    <div class="col-12 col-lg-3">
+      <div class="bg-dark-card">
+        <h5 class="brand-yellow">Filters</h5>
+        <form method="get">
+          <div class="filter-group">
+            <label for="author" class="form-label">Author</label>
+            <input type="text" class="form-control filter-input" id="author" name="author">
+          </div>
+          <div class="filter-group">
+            <label for="keyword" class="form-label">Keyword</label>
+            <input type="text" class="form-control filter-input" id="keyword" name="keyword">
+          </div>
+          <div class="filter-group">
+            <label for="server" class="form-label">Server</label>
+            <select class="form-select" id="server" name="server">
+              <option value="">All</option>
+              {% for server in category_map.keys() %}
+              <option value="{{ server }}">{{ server }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="channel" class="form-label">Channel</label>
+            <select class="form-select" id="channel" name="channel">
+              <option value="">All</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="tag" class="form-label">Message Tag</label>
+            <input type="text" class="form-control filter-input" id="tag" name="tag">
+          </div>
+          <div class="filter-group">
+            <label for="user_tag" class="form-label">User Tag</label>
+            <input type="text" class="form-control filter-input" id="user_tag" name="user_tag">
+          </div>
+          <div class="filter-group">
+            <label for="per_page" class="form-label">Limit</label>
+            <select class="form-select" id="per_page" name="per_page">
+              {% for size in [25, 50, 100, 200] %}
+              <option value="{{ size }}" {% if per_page == size %}selected{% endif %}>{{ size }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="d-grid mt-3">
+            <button type="submit" class="btn btn-warning">Apply Filters</button>
+            <a href="/" class="btn btn-outline-secondary mt-2">Clear Filters</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-12 col-lg-9">
+      <div class="bg-dark-card">
+        <h5 class="brand-yellow">Search Results</h5>
+        <div class="table-responsive">
+          <table class="table table-dark table-hover">
+            <thead>
+              <tr>
+                <th>Author</th>
+                <th>Content</th>
+                <th>Tags</th>
+                <th>Server</th>
+                <th>Channel</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for msg in messages %}
+              <tr class="clickable-row" onclick="location.href='/message/{{ msg.id }}'">
+                <td><a href="/user/{{ msg.author }}" class="user-link">{{ msg.author_display or msg.author }}</a></td>
+                <td>{{ msg.content[:100] }}{% if msg.content|length > 100 %}...{% endif %}</td>
+                <td>{{ msg.tags or '—' }}</td>
+                <td>{{ msg.server_name or '—' }}</td>
+                <td>{{ msg.channel_name or '—' }}</td>
+                <td>{{ msg.timestamp }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% include 'pagination.html' %}
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

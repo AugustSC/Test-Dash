@@ -1,0 +1,67 @@
+<form method="get" class="row g-2 mb-4">
+  <div class="col-md-2">
+    <label for="author" class="form-label">Author</label>
+    <input type="text" id="author" name="author" class="form-control" value="{{ selected_author or '' }}">
+  </div>
+  <div class="col-md-2">
+    <label for="keyword" class="form-label">Keyword</label>
+    <input type="text" id="keyword" name="keyword" class="form-control" value="{{ selected_keyword or '' }}">
+  </div>
+
+  <div class="col-md-2">
+    <label for="server" class="form-label">Server</label>
+    <select name="server" id="server" class="form-select">
+      <option value="">All Servers</option>
+      {% for server in category_map.keys() %}
+        <option value="{{ server }}" {% if server == selected_server %}selected{% endif %}>{{ server }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label for="category" class="form-label">Category</label>
+    <select name="category" id="category" class="form-select">
+      <option value="">All Categories</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label for="channel" class="form-label">Channel</label>
+    <select name="channel" id="channel" class="form-select">
+      <option value="">All Channels</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label for="selected_tag" class="form-label">Message Tag</label>
+    <select name="selected_tag" id="selected_tag" class="form-select">
+      <option value="">All Message Tag</option>
+      {% for tag in all_tags %}
+        <option value="{{ tag }}" {% if tag == selected_tag %}selected{% endif %}>{{ tag }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <label for="selected_user_tag" class="form-label">User Tag</label>
+    <select name="selected_user_tag" id="selected_user_tag" class="form-select">
+      <option value="">All User Tags</option>
+      {% for tag in all_user_tags %}
+        <option value="{{ tag }}" {% if tag == selected_user_tag %}selected{% endif %}>{{ tag }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-1">
+    <label for="limit" class="form-label">Limit</label>
+    <select name="per_page" id="per_page" class="form-select">
+      {% for l in [10, 25, 50, 100, 250] %}
+        <option value="{{ l }}" {% if l == per_page|int %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-2 align-self-end">
+    <button type="submit" class="btn btn-warning w-100">Apply Filters</button>
+  </div>
+</form>

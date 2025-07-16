@@ -1,0 +1,15 @@
+watchlist:
+  - keyword: spy
+  - keyword: intel
+  - keyword: montoya
+  - keyword: test
+  - keyword: test squad
+ignored_bots:
+  - Dyno
+  - MEE6
+  - TestBot9000
+  - Carl-bot
+  - Orgs
+locations:
+  - "Pax Mortis"
+  - "Ramming Department"

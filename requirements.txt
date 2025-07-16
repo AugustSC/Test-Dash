@@ -1,0 +1,12 @@
+flask
+gunicorn
+psycopg2-binary
+sqlalchemy
+flask_sqlalchemy
+flask_login
+jinja2
+python-dotenv
+PyYAML
+markdown
+markupsafe
+vaderSentiment

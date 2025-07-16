@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TestSpy – {{ username }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', sans-serif; }
+    .brand-yellow { color: #FFBB00; }
+    .bg-dark-card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+      margin-bottom: 1.5rem;
+    }
+    .user-tag {
+      display: inline-block;
+      background-color: #333;
+      color: #FFBB00;
+      padding: 2px 6px;
+      margin: 2px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    .table td, .table th { vertical-align: middle; }
+    .clickable-row { cursor: pointer; }
+    .section-label { color: #bbb; font-weight: bold; font-size: 0.9rem; margin-top: 1rem; }
+    .user-section-title { font-size: 1.1rem; margin-top: 1.5rem; }
+    .message-preview { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .small-table td { font-size: 0.85rem; padding: 0.25rem 0.5rem; }
+    .markdown-preview { white-space: pre-wrap; font-size: 0.9rem; color: #ddd; border: 1px solid #444; border-radius: 6px; padding: 0.5rem; background-color: #181818; margin-top: 0.5rem; }
+    .activity-scroll { max-height: 300px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
+  <a class="navbar-brand d-flex align-items-center" href="/">
+    <img src="/static/TEST-Logo.png" alt="Logo" height="40">
+    <span class="ms-2 brand-yellow">TestSpy</span>
+  </a>
+  <div class="ms-auto">
+    <a href="/" class="btn btn-sm btn-outline-warning">← Back to Dashboard</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="bg-dark-card">
+        <h4 class="brand-yellow">User Profile: {{ username }}</h4>
+
+        <div class="mb-2">
+          <span class="section-label">User Tags:</span><br>
+          {% if user_tags %}
+            {% for tag in user_tags %}<span class="user-tag">{{ tag }}</span>{% endfor %}
+          {% else %}
+            <span class="text-muted">None assigned</span>
+          {% endif %}
+          <button class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="modal" data-bs-target="#editTagsModal">Edit</button>
+        </div>
+
+        <div class="mb-2">
+          <span class="section-label">RSI Handle:</span><br>
+          <a href="https://robertsspaceindustries.com/en/citizens/{{ rsi_handle or username }}" class="link-warning" target="_blank">
+            https://robertsspaceindustries.com/en/citizens/{{ rsi_handle or username }}
+          </a>
+          <button class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="modal" data-bs-target="#editRSIModal">Edit</button>
+        </div>
+
+        <div class="mb-2">
+          <span class="section-label">User Notes:</span>
+          <form method="POST">
+            <textarea class="form-control form-control-sm mt-1" name="notes" rows="8" placeholder="Enter markdown-supported notes...">{{ user_notes }}</textarea>
+            <button class="btn btn-sm btn-outline-warning mt-2" type="submit">Save Notes</button>
+          </form>
+          {% if user_notes %}<div class="markdown-preview">{{ rendered_notes }}</div>{% endif %}
+        </div>
+
+        <div class="mb-2">
+          <span class="section-label">Known Aliases:</span>
+          <ul class="mb-0">
+            {% for alias in known_aliases %}
+              <li><a href="/user/{{ alias }}" class="link-warning">{{ alias }}</a></li>
+            {% else %}
+              <li class="text-muted">None known</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="mb-2">
+          <span class="section-label">Most Frequent Contacts:</span>
+          <ul class="mb-0">
+            {% for contact in top_contacts %}
+              <li>{{ contact.name }} ({{ contact.count }} messages)</li>
+            {% else %}
+              <li class="text-muted">No contact data available</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="mb-2">
+          <span class="section-label">Top Servers:</span>
+          <ul class="mb-0">
+            {% for srv in top_servers %}
+              <li>{{ srv.name }} ({{ srv.count }} messages)</li>
+            {% else %}
+              <li class="text-muted">No server data</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="mb-2 activity-scroll">
+          <span class="section-label">Activity (30 Days):</span>
+          <table class="table table-dark table-striped small-table">
+            <tbody>
+            {% for day in activity_data %}
+              <tr><td>{{ day.date }}</td><td>{{ day.count }} messages</td></tr>
+            {% else %}
+              <tr><td colspan="2" class="text-muted">No activity found.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="bg-dark-card">
+        <h5 class="brand-yellow">Flagged Messages</h5>
+        <div class="table-responsive">
+          <table class="table table-dark table-hover small-table">
+            <thead>
+              <tr>
+                <th>Content</th>
+                <th>Server</th>
+                <th>Channel</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for msg in flagged_messages %}
+              <tr class="clickable-row" onclick="location.href='/message/{{ msg.id }}'">
+                <td class="message-preview">{{ msg.content }}</td>
+                <td>{{ msg.server_name or '—' }}</td>
+                <td>{{ msg.channel_name or '—' }}</td>
+                <td>{{ msg.timestamp }}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="4" class="text-muted">No flagged messages</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
