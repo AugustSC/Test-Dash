@@ -1,2 +1,2 @@
 # RSIbot
-This is TEST’s Discord bot project
+This is my project
